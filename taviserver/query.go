@@ -40,10 +40,6 @@ func Query(streamAddress string) (*QueryResult, error) {
 	}
 	fmt.Println("Read", totalRead, "bytes over", interval, "seconds.")
 
-	if err != nil {
-		fmt.Println(err)
-	}
-
 	// return success
 	result := new(QueryResult)
 	result.SpeedBytesPerSec = int64(totalRead / interval)

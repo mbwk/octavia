@@ -2,7 +2,6 @@ package taviserver
 
 import (
 	"bufio"
-	"fmt"
 	"net/http"
 	"time"
 )
@@ -14,7 +13,7 @@ type QueryResult struct {
 func Query(streamAddress string) (*QueryResult, error) {
 	resp, err := http.Get(streamAddress)
 	if err != nil {
-		fmt.Println(err)
+		return nil, err
 	}
 
 	defer resp.Body.Close()
@@ -38,7 +37,6 @@ func Query(streamAddress string) (*QueryResult, error) {
 			break
 		}
 	}
-	fmt.Println("Read", totalRead, "bytes over", interval, "seconds.")
 
 	// return success
 	result := new(QueryResult)

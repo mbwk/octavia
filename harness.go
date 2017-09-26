@@ -4,16 +4,14 @@ import (
 	"fmt"
 	"github.com/mbwk/octavia/taviserver"
 	"os"
-	"sync"
 )
 
-func testSpeed(serverAddress string) {
+func testSpeed(serverAddress string) string {
 	q, err := taviserver.Query(serverAddress)
 	if err != nil {
-		fmt.Println(serverAddress, "-", err)
-		return
+		return fmt.Sprint(serverAddress, " - ", err)
 	}
-	fmt.Println(serverAddress, "-", "Speed (kbps):", q.SpeedBytesPerSec/1024)
+	return fmt.Sprint(serverAddress, " - Speed (kbps): ", q.SpeedBytesPerSec/1024)
 }
 
 func main() {
@@ -24,13 +22,15 @@ func main() {
 		return
 	}
 
-	var wg sync.WaitGroup
-	wg.Add(argc)
+	items := len(args)
+	c := make(chan string)
 	for _, url := range args {
-		go func(url string) {
-			defer wg.Done()
-			testSpeed(url)
-		}(url)
+		go func(url string, c chan string) {
+			c <- testSpeed(url)
+		}(url, c)
 	}
-	wg.Wait()
+
+	for i := 0; i < items; i++ {
+		fmt.Println(<-c)
+	}
 }
